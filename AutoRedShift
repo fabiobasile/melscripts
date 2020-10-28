@@ -1,0 +1,24 @@
+string $selectedObjs[] = `ls -sl`; //get selected objects
+string $texpath = "G:\GoogleDrive\VFX\RESOURCES\REPOSITORY\VEHICLES\CARS\ELECTRIC_TRANSMISSION\TEXTURES\"; //location of texture files
+for ($obj in $selectedObjs){ //iterate on selected objects
+
+	string $newMat = `shadingNode -asShader "RedshiftMaterial"`; //create a redshift material
+
+////////////////// create texture file nodes for each PBR channel
+
+	string $fileNode = `shadingNode -asTexture file -name $texpath + $obj + "_Color"`;
+	connectAttr -f ( $fileNode + ".outColor" ) ( $material + ".diffuse_color" );
+
+	string $fileNode = `shadingNode -asTexture file -name $obj + "_Diffuse"`;
+	connectAttr -f ( $fileNode + ".outAlpha" ) ( $material + ".diffuse_weight" );
+
+	string $fileNode = `shadingNode -asTexture file -name $obj + "_Metalness"`;
+	connectAttr -f ( $fileNode + ".outAlpha" ) ( $material + ".refl_weight" );
+
+	string $fileNode = `shadingNode -asTexture file -name $obj + "_Roughness"`;
+	connectAttr -f ( $fileNode + ".outAlpha" ) ( $material + ".refl_roughness" );
+
+	string $newSG = `sets -renderable true -noSurfaceShader true -empty -name ($rnMat + "SG")`; //create a shading group
+	connectAttr -f ($rnMat + ".outColor") ($newSG + ".surfaceShader"); //connect shading group to redshift material
+	sets -e -forceElement $newSG $obj; //connect material to object
+}
