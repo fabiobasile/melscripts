@@ -11,10 +11,10 @@ for ($obj in $selectedObjs){
 	string $fileNodeMetalness    = `shadingNode -asTexture file -name ($obj + "_Metalness")`;
 	string $fileNodeRoughness    = `shadingNode -asTexture file -name ($obj + "_Roughness")`;
 	
-//	connectAttr -f ( $fileNodeColor + ".outColor" ) ( ".diffuse_color" );
-//	connectAttr -f ( $fileNodeDiffuse + ".outAlpha" ) ( ".diffuse_weight" );
-//	connectAttr -f ( $fileNodeMetalness + ".outAlpha" ) ( ".refl_weight" );
-//	connectAttr -f ( $fileNodeRoughness + ".outAlpha" ) ( ".refl_roughness" );
+	connectAttr -f ( $obj + "_RS.outColor" ) ( $obj + "_RS.diffuse_color" );
+	connectAttr -f ( $obj + "_RS.outAlpha" ) ( $obj + "_RS.diffuse_weight" );
+	connectAttr -f ( $obj + "_RS.outAlpha" ) ( $obj + "_RS.refl_weight" );
+	connectAttr -f ( $obj + "_RS.outAlpha" ) ( $obj + "_RS.refl_roughness" );
 
 	connectAttr -f ($rnMat + ".outColor") ($newSG + ".surfaceShader");
 	sets -e -forceElement $newSG $obj;
