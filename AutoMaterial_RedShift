@@ -5,16 +5,21 @@ for ($obj in $selectedObjs){
 	string $newMat    = `shadingNode -asShader "RedshiftMaterial"`;
 	string $rnMat     = `rename $newMat ($obj + "_RS")`;
 	string $newSG     = `sets -renderable true -noSurfaceShader true -empty -name ($rnMat + "SG")`;
-
+	
+	string $nodeNameColor = $rnMat;
+	string $nodeNameDiffuse = $rnMat;
+	string $nodeNameMetalness = $rnMat;
+	string $nodeNameRoughness = $rnMat;
+			
 	string $fileNodeColor        = `shadingNode -asTexture file -name ($obj + "_Color")`;
 	string $fileNodeDiffuse      = `shadingNode -asTexture file -name ($obj + "_Diffuse")`;
 	string $fileNodeMetalness    = `shadingNode -asTexture file -name ($obj + "_Metalness")`;
 	string $fileNodeRoughness    = `shadingNode -asTexture file -name ($obj + "_Roughness")`;
 	
-	connectAttr -f ( $obj + "_RS.outColor" ) ( $obj + "_RS.diffuse_color" );
-	connectAttr -f ( $obj + "_RS.outAlpha" ) ( $obj + "_RS.diffuse_weight" );
-	connectAttr -f ( $obj + "_RS.outAlpha" ) ( $obj + "_RS.refl_weight" );
-	connectAttr -f ( $obj + "_RS.outAlpha" ) ( $obj + "_RS.refl_roughness" );
+	connectAttr -f ( $nodeNameColor + ".outColor" ) ( $nodeNameColor + ".diffuse_color" );
+	connectAttr -f ( $nodeNameDiffuse + ".outAlpha" ) ( $nodeNameDiffuse + ".diffuse_weight" );
+	connectAttr -f ( $fileNodeMetalness + ".outAlpha" ) ( $fileNodeMetalness + ".refl_weight" );
+	connectAttr -f ( $nodeNameRoughness + ".outAlpha" ) ( $nodeNameRoughness + ".refl_roughness" );
 
 	connectAttr -f ($rnMat + ".outColor") ($newSG + ".surfaceShader");
 	sets -e -forceElement $newSG $obj;
