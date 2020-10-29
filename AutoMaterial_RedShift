@@ -1,17 +1,14 @@
 string $selectedObjs[] = `ls -sl`; //get selected objects
 for ($obj in $selectedObjs){ //iterate on selected objects
-    string $texpath = "G:/GoogleDrive/VFX/RESOURCES/REPOSITORY/VEHICLES/CARS/ELECTRIC_TRANSMISSION/TEXTURES/";
+    string $strDir = "G:/GoogleDrive/VFX/RESOURCES/REPOSITORY/VEHICLES/CARS/ELECTRIC_TRANSMISSION/TEXTURES/";
 	string $newMat = `shadingNode -asShader "RedshiftMaterial"`; //create a material
 	string $rnMat = `rename $newMat ($obj + "_RS")`; //rename new material based on object [optional]
 	string $newSG = `sets -renderable true -noSurfaceShader true -empty -name ($rnMat + "SG")`; //create a shading group
-	string $filename = ($texpath + $obj); //formats the name of the texture file node using the name of the folder path + object name
 
-// generate variables for each PBR shader
-
-	string $fileNodeColor = `shadingNode -asTexture file -name $filename + "_Color"`;
-	string $fileNodeDiffuse = `shadingNode -asTexture file -name $filename + "_Diffuse"`;
-	string $fileNodeMetalness = `shadingNode -asTexture file -name $filename + "_Metalness"`;
-	string $fileNodeRoughness = `shadingNode -asTexture file -name $filename + "_Roughness"`;
+	string $fileNodeColor = `shadingNode -asTexture file -name ($strDir + $obj + "_Color")`;
+	string $fileNodeDiffuse = `shadingNode -asTexture file -name ($strDir + $obj + "_Diffuse")`;
+	string $fileNodeMetalness = `shadingNode -asTexture file -name ($strDir + $obj + "_Metalness")`;
+	string $fileNodeRoughness = `shadingNode -asTexture file -name ($strDir + $obj + "_Roughness")`;
 	
 // connects each texture file node to its corresponding channel
 
@@ -23,4 +20,3 @@ for ($obj in $selectedObjs){ //iterate on selected objects
 	connectAttr -f ($rnMat + ".outColor") ($newSG + ".surfaceShader"); //connect shading group to material
 	sets -e -forceElement $newSG $obj; //connect material to object
 }
-
