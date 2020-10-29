@@ -1,26 +1,35 @@
 string $selectedObjs[] = `ls -sl`;
-string $strDir    = "G:/GoogleDrive/VFX/RESOURCES/REPOSITORY/VEHICLES/CARS/ELECTRIC_TRANSMISSION/TEXTURES/";
-string $ext = "exr";
+string $strDir    = "G:/GoogleDrive/VFX/RESOURCES/REPOSITORY/VEHICLES/CARS/ELECTRIC_TRANSMISSION/TEXTURES/ELECTRIC_TRANSMISSION_";
+string $ext = ".png";
 for ($obj in $selectedObjs){
 	string $newMat    = `shadingNode -asShader "RedshiftMaterial"`;
 	string $rnMat     = `rename $newMat ($obj + "_RS")`;
 	string $newSG     = `sets -renderable true -noSurfaceShader true -empty -name ($rnMat + "SG")`;
-	
-	string $nodeNameColor = $rnMat;
-	string $nodeNameDiffuse = $rnMat;
-	string $nodeNameMetalness = $rnMat;
-	string $nodeNameRoughness = $rnMat;
 			
-	string $fileNodeColor        = `shadingNode -asTexture file -name ($obj + "_Color")`;
-	string $fileNodeDiffuse      = `shadingNode -asTexture file -name ($obj + "_Diffuse")`;
-	string $fileNodeMetalness    = `shadingNode -asTexture file -name ($obj + "_Metalness")`;
-	string $fileNodeRoughness    = `shadingNode -asTexture file -name ($obj + "_Roughness")`;
+	string $fileNodeColor        = `shadingNode -asTexture file -name ($obj + "_RS_Color")`;
+	string $fileNodeDiffuse      = `shadingNode -asTexture file -name ($obj + "_RS_Diffuse")`;
+	string $fileNodeMetalness    = `shadingNode -asTexture file -name ($obj + "_RS_Metalness")`;
+	string $fileNodeRoughness    = `shadingNode -asTexture file -name ($obj + "_RS_Roughness")`;
 	
-	connectAttr -f ( $nodeNameColor + ".outColor" ) ( $nodeNameColor + ".diffuse_color" );
-	connectAttr -f ( $nodeNameDiffuse + ".outAlpha" ) ( $nodeNameDiffuse + ".diffuse_weight" );
-	connectAttr -f ( $fileNodeMetalness + ".outAlpha" ) ( $fileNodeMetalness + ".refl_weight" );
-	connectAttr -f ( $nodeNameRoughness + ".outAlpha" ) ( $nodeNameRoughness + ".refl_roughness" );
-
+	connectAttr -f ( $obj + "_RS_Color.outColor" ) ( $obj + "_RS.diffuse_color" );
+	connectAttr -f ( $obj + "_RS_Diffuse.outAlpha" ) ( $obj + "_RS.diffuse_weight" );
+	connectAttr -f ( $obj + "_RS_Metalness.outAlpha" ) ( $obj + "_RS.refl_weight" );
+	connectAttr -f ( $obj + "_RS_Roughness.outAlpha" ) ( $obj + "_RS.refl_roughness" );
+	
+	string $inputColor = $fileNodeColor + ".fileTextureName";
+	string $pathColor = $strDir + $obj + "_PT_Color" + $ext ;
+	string $inputDiffuse = $fileNodeDiffuse + ".fileTextureName";
+	string $pathDiffuse = $strDir + $obj + "_PT_Diffuse" + $ext ;
+	string $inputMetalness = $fileNodeMetalness + ".fileTextureName";
+	string $pathMetalness = $strDir + $obj + "_PT_Metalness" + $ext ;
+	string $inputRoughness = $fileNodeRoughness + ".fileTextureName";
+	string $pathRoughness = $strDir + $obj + "_PT_Roughness" + $ext ;
+			
+    setAttr -type "string" $inputColor $pathColor;
+	setAttr -type "string" $inputDiffuse $pathDiffuse;
+	setAttr -type "string" $inputMetalness $pathMetalness;
+	setAttr -type "string" $inputRoughness $pathRoughness;
+	
 	connectAttr -f ($rnMat + ".outColor") ($newSG + ".surfaceShader");
 	sets -e -forceElement $newSG $obj;
 }
