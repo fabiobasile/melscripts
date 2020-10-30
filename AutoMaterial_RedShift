@@ -6,15 +6,19 @@ for ($obj in $selectedObjs){
 	string $rnMat     = `rename $newMat ($obj + "_RS")`;
 	string $newSG     = `sets -renderable true -noSurfaceShader true -empty -name ($rnMat + "SG")`;
 			
-	string $fileNodeColor        = `shadingNode -asTexture file -name ($obj + "_RS_Color")`;
-	string $fileNodeDiffuse      = `shadingNode -asTexture file -name ($obj + "_RS_Diffuse")`;
-	string $fileNodeMetalness    = `shadingNode -asTexture file -name ($obj + "_RS_Metalness")`;
-	string $fileNodeRoughness    = `shadingNode -asTexture file -name ($obj + "_RS_Roughness")`;
-	
+	string $fileNodeColor                    = `shadingNode -asTexture file -name ($obj + "_RS_Color")`;
+	string $fileNodeDiffuse                  = `shadingNode -asTexture file -name ($obj + "_RS_Diffuse")`;
+	string $fileNodeMetalness                = `shadingNode -asTexture file -name ($obj + "_RS_Metalness")`;
+	string $fileNodeRoughness                = `shadingNode -asTexture file -name ($obj + "_RS_Roughness")`;
+	string $fileNodeNormal                   = `shadingNode -asTexture file -name ($obj + "_RS_Normal")`;
+	string $fileNodeDisplacementHeightField  = `shadingNode -asTexture file -name ($obj + "_RS_DisplacementHeightField")`;	
+		
 	connectAttr -f ( $obj + "_RS_Color.outColor" ) ( $obj + "_RS.diffuse_color" );
 	connectAttr -f ( $obj + "_RS_Diffuse.outAlpha" ) ( $obj + "_RS.diffuse_weight" );
 	connectAttr -f ( $obj + "_RS_Metalness.outAlpha" ) ( $obj + "_RS.refl_weight" );
 	connectAttr -f ( $obj + "_RS_Roughness.outAlpha" ) ( $obj + "_RS.refl_roughness" );
+	connectAttr -f ( $obj + "_RS_Normal.outColor" ) ( $obj + "_RS.bump_input" );
+	connectAttr -f ( $obj + "_RS_DisplacementHeightField.outColor" ) ( $obj + "_RSSG.displacementShader" );
 	
 	string $inputColor = $fileNodeColor + ".fileTextureName";
 	string $pathColor = $strDir + $obj + "_PT_Color" + $ext ;
@@ -24,12 +28,19 @@ for ($obj in $selectedObjs){
 	string $pathMetalness = $strDir + $obj + "_PT_Metalness" + $ext ;
 	string $inputRoughness = $fileNodeRoughness + ".fileTextureName";
 	string $pathRoughness = $strDir + $obj + "_PT_Roughness" + $ext ;
-			
+	string $inputNormal = $fileNodeNormal + ".fileTextureName";
+	string $pathNormal = $strDir + $obj + "_PT_Normal" + $ext ;
+	string $inputDisplacementHeightField = $fileNodeDisplacementHeightField + ".fileTextureName";
+	string $pathDisplacementHeightField = $strDir + $obj + "_PT_DisplacementHeightField" + $ext ;	
+	
+				
     setAttr -type "string" $inputColor $pathColor;
 	setAttr -type "string" $inputDiffuse $pathDiffuse;
 	setAttr -type "string" $inputMetalness $pathMetalness;
 	setAttr -type "string" $inputRoughness $pathRoughness;
-	
+	setAttr -type "string" $inputNormal $pathNormal;
+	setAttr -type "string" $inputDisplacementHeightField $pathDisplacementHeightField;
+		
 	connectAttr -f ($rnMat + ".outColor") ($newSG + ".surfaceShader");
 	sets -e -forceElement $newSG $obj;
 }
