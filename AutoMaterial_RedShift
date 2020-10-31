@@ -1,17 +1,22 @@
 string $selectedObjs[] = `ls -sl`;
-string $strDir    = "G:/GoogleDrive/VFX/RESOURCES/REPOSITORY/VEHICLES/CARS/ELECTRIC_TRANSMISSION/TEXTURES/ELECTRIC_TRANSMISSION_";
-string $ext = ".png";
+string $filePrefix = "ELECTRIC_TRANSMISSION_"; // if your texture files are created with a prefix from your painting program, add that here
+string $strDir    = "G:/GoogleDrive/VFX/RESOURCES/REPOSITORY/VEHICLES/CARS/ELECTRIC_TRANSMISSION/TEXTURES/"+$filePrefix; //edit what's between the quotes only to specify the location of your textures on your hard drive
+string $ext = ".png"; //texture file extension
 for ($obj in $selectedObjs){
 	string $newMat    = `shadingNode -asShader "RedshiftMaterial"`;
 	string $rnMat     = `rename $newMat ($obj + "_RS")`;
 	string $newSG     = `sets -renderable true -noSurfaceShader true -empty -name ($rnMat + "SG")`;
+	
+	// variables for the shading nodes to be generated
 			
 	string $fileNodeColor                    = `shadingNode -asTexture file -name ($obj + "_RS_Color")`;
 	string $fileNodeDiffuse                  = `shadingNode -asTexture file -name ($obj + "_RS_Diffuse")`;
 	string $fileNodeMetalness                = `shadingNode -asTexture file -name ($obj + "_RS_Metalness")`;
 	string $fileNodeRoughness                = `shadingNode -asTexture file -name ($obj + "_RS_Roughness")`;
 	string $fileNodeNormal                   = `shadingNode -asTexture file -name ($obj + "_RS_Normal")`;
-	string $fileNodeDisplacementHeightField  = `shadingNode -asTexture file -name ($obj + "_RS_DisplacementHeightField")`;	
+	string $fileNodeDisplacementHeightField  = `shadingNode -asTexture file -name ($obj + "_RS_DisplacementHeightField")`;
+	
+	// connect the file nodes to each shader shannels
 		
 	connectAttr -f ( $obj + "_RS_Color.outColor" ) ( $obj + "_RS.diffuse_color" );
 	connectAttr -f ( $obj + "_RS_Diffuse.outAlpha" ) ( $obj + "_RS.diffuse_weight" );
@@ -19,6 +24,8 @@ for ($obj in $selectedObjs){
 	connectAttr -f ( $obj + "_RS_Roughness.outAlpha" ) ( $obj + "_RS.refl_roughness" );
 	connectAttr -f ( $obj + "_RS_Normal.outColor" ) ( $obj + "_RS.bump_input" );
 	connectAttr -f ( $obj + "_RS_DisplacementHeightField.outColor" ) ( $obj + "_RSSG.displacementShader" );
+	
+	// variables for the texture files nodes to be generated
 	
 	string $inputColor = $fileNodeColor + ".fileTextureName";
 	string $pathColor = $strDir + $obj + "_PT_Color" + $ext ;
@@ -33,13 +40,16 @@ for ($obj in $selectedObjs){
 	string $inputDisplacementHeightField = $fileNodeDisplacementHeightField + ".fileTextureName";
 	string $pathDisplacementHeightField = $strDir + $obj + "_PT_DisplacementHeightField" + $ext ;	
 	
+	// fill the texture channels of each shader with the appropriate PBR texture path
 				
-    setAttr -type "string" $inputColor $pathColor;
+	setAttr -type "string" $inputColor $pathColor;
 	setAttr -type "string" $inputDiffuse $pathDiffuse;
 	setAttr -type "string" $inputMetalness $pathMetalness;
 	setAttr -type "string" $inputRoughness $pathRoughness;
 	setAttr -type "string" $inputNormal $pathNormal;
 	setAttr -type "string" $inputDisplacementHeightField $pathDisplacementHeightField;
+	
+	// connect each material to each shader, rinse and repeat
 		
 	connectAttr -f ($rnMat + ".outColor") ($newSG + ".surfaceShader");
 	sets -e -forceElement $newSG $obj;
