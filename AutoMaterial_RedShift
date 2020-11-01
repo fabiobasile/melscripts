@@ -15,7 +15,7 @@ for ($obj in $selectedObjs){
 	string $fileNodeRoughness                = `shadingNode -asTexture file -name ($obj + "_RS_Roughness")`;
 	string $fileNodeEmissionColor            = `shadingNode -asTexture file -name ($obj + "_RS_EmissionColor")`;	
 	string $fileNodeNormal                   = `shadingNode -asTexture file -name ($obj + "_RS_Normal")`;
-	string $fileNodeDisplacementHeightField  = `shadingNode -asTexture file -name ($obj + "_RS_DisplacementHeightField")`;
+	string $fileNodeDisplaceHeightField  = `shadingNode -asTexture file -name ($obj + "_RS_DisplaceHeightField")`;
 	
 	// connect the file nodes to each shader shannels
 		
@@ -25,7 +25,7 @@ for ($obj in $selectedObjs){
 	connectAttr -f ( $obj + "_RS_Roughness.outAlpha" )                ( $obj + "_RS.refl_roughness" );
 	connectAttr -f ( $obj + "_RS_EmissionColor.outColor" )            ( $obj + "_RS.emission_color" );
 	connectAttr -f ( $obj + "_RS_Normal.outColor" )                   ( $obj + "_RS.bump_input" );
-	connectAttr -f ( $obj + "_RS_DisplacementHeightField.outColor" )  ( $obj + "_RSSG.displacementShader" );
+	connectAttr -f ( $obj + "_RS_DisplaceHeightField.outColor" )      ( $obj + "_RSSG.displacementShader" );
 	
 	// variables for the texture files nodes to be generated
 	
@@ -41,8 +41,8 @@ for ($obj in $selectedObjs){
 	string $pathEmissionColor             = $strDir + $obj                        + "_EmissionColor"            + $ext ;	
 	string $inputNormal                   = $fileNodeNormal                       + ".fileTextureName";
 	string $pathNormal                    = $strDir + $obj                        + "_Normal"                   + $ext ;
-	string $inputDisplacementHeightField  = $fileNodeDisplacementHeightField      + ".fileTextureName";
-	string $pathDisplacementHeightField   = $strDir + $obj                        + "_DisplacementHeightField"  + $ext ;	
+	string $inputDisplaceHeightField      = $fileNodeDisplaceHeightField          + ".fileTextureName";
+	string $pathDisplaceHeightField       = $strDir + $obj                        + "_DisplaceHeightField"  + $ext ;	
 	
 	// fill the texture channels of each shader with the appropriate PBR texture path
 				
@@ -52,7 +52,7 @@ for ($obj in $selectedObjs){
 	setAttr -type "string" $inputRoughness                 $pathRoughness;
 	setAttr -type "string" $inputEmissionColor             $pathEmissionColor;	
 	setAttr -type "string" $inputNormal                    $pathNormal;
-	setAttr -type "string" $inputDisplacementHeightField   $pathDisplacementHeightField;
+	setAttr -type "string" $inputDisplaceHeightField   $pathDisplaceHeightField;
 	
 	// connect each material to each shader, rinse and repeat
 		
