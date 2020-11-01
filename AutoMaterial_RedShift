@@ -64,3 +64,4 @@ for ($obj in $selectedObjs){
 	connectAttr -f ($rnMat + ".outColor") ($newSG + ".surfaceShader");
 	sets -e -forceElement $newSG $obj;
 }
+
