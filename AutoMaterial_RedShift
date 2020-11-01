@@ -9,13 +9,15 @@ for ($obj in $selectedObjs){
 	
 	// variables for the shading nodes to be generated
 			
-	string $fileNodeColor                    = `shadingNode -asTexture file -name ($obj + "_RS_Color")`;
-	string $fileNodeDiffuse                  = `shadingNode -asTexture file -name ($obj + "_RS_Diffuse")`;
-	string $fileNodeMetalness                = `shadingNode -asTexture file -name ($obj + "_RS_Metalness")`;
-	string $fileNodeRoughness                = `shadingNode -asTexture file -name ($obj + "_RS_Roughness")`;
-	string $fileNodeEmissionColor            = `shadingNode -asTexture file -name ($obj + "_RS_EmissionColor")`;	
-	string $fileNodeNormal                   = `shadingNode -asTexture file -name ($obj + "_RS_Normal")`;
-	string $fileNodeDisplaceHeightField      = `shadingNode -asTexture file -name ($obj + "_RS_DisplaceHeightField")`;
+	string $fileNodeColor                    = `shadingNode -asTexture file -name                 ($obj + "_RS_Color")`;
+	string $fileNodeDiffuse                  = `shadingNode -asTexture file -name                 ($obj + "_RS_Diffuse")`;
+	string $fileNodeMetalness                = `shadingNode -asTexture file -name                 ($obj + "_RS_Metalness")`;
+	string $fileNodeRoughness                = `shadingNode -asTexture file -name                 ($obj + "_RS_Roughness")`;
+	string $fileNodeEmissionColor            = `shadingNode -asTexture file -name                 ($obj + "_RS_EmissionColor")`;	
+	string $fileNodeNormal                   = `shadingNode -asTexture file -name                 ($obj + "_RS_Normal")`;
+	string $fileNodeDisplaceHeightField      = `shadingNode -asUtility RedshiftDisplacement -name ($obj + "_RS_DisplaceHeightField")`;
+	string $fileNodeDisplaceHeightFieldMap   = `shadingNode -asTexture file -name                 ($obj + "_RS_DisplaceHeightFieldMap")`;	
+
 	
 	// connect the file nodes to each shader shannels
 		
@@ -25,8 +27,9 @@ for ($obj in $selectedObjs){
 	connectAttr -f ( $obj + "_RS_Roughness.outAlpha" )                ( $obj + "_RS.refl_roughness" );
 	connectAttr -f ( $obj + "_RS_EmissionColor.outColor" )            ( $obj + "_RS.emission_color" );
 	connectAttr -f ( $obj + "_RS_Normal.outColor" )                   ( $obj + "_RS.bump_input" );
-	connectAttr -f ( $obj + "_RS_DisplaceHeightField.outColor" )      ( $obj + "_RSSG.rsDisplacementShader" );
-	
+	connectAttr -f ( $obj + "_RS_DisplaceHeightField.texMap" )        ( $obj + "_RSSG.rsDisplacementShader" );
+	connectAttr -f ( $obj + "_RS_DisplaceHeightFieldMap.outColor" )   ( $obj + "_RS_DisplaceHeightField.texMap" );
+			
 	// variables for the texture files nodes to be generated
 	
 	string $inputColor                    = $fileNodeColor                        + ".fileTextureName";
@@ -41,8 +44,10 @@ for ($obj in $selectedObjs){
 	string $pathEmissionColor             = $strDir + $obj                        + "_EmissionColor"            + $ext ;	
 	string $inputNormal                   = $fileNodeNormal                       + ".fileTextureName";
 	string $pathNormal                    = $strDir + $obj                        + "_Normal"                   + $ext ;
-	string $inputDisplaceHeightField      = $fileNodeDisplaceHeightField          + ".fileTextureName";
-	string $pathDisplaceHeightField       = $strDir + $obj                        + "_DisplaceHeightField"  + $ext ;	
+	string $inputDisplaceHeightFieldMap   = $fileNodeDisplaceHeightFieldMap       + ".fileTextureName";
+	string $pathDisplaceHeightFieldMap    = $strDir + $obj                        + "_DisplaceHeightFieldMap"   + $ext ;	
+	string $inputDisplaceHeightField      = $fileNodeDisplaceHeightField          + ".texMap";
+	string $pathDisplaceHeightField       = $strDir + $obj                        + "_DisplaceHeightField"      + $ext ;	
 	
 	// fill the texture channels of each shader with the appropriate PBR texture path
 				
@@ -52,7 +57,7 @@ for ($obj in $selectedObjs){
 	setAttr -type "string" $inputRoughness                 $pathRoughness;
 	setAttr -type "string" $inputEmissionColor             $pathEmissionColor;	
 	setAttr -type "string" $inputNormal                    $pathNormal;
-	setAttr -type "string" $inputDisplaceHeightField   $pathDisplaceHeightField;
+	setAttr -type "string" $inputDisplaceHeightFieldMap    $pathDisplaceHeightField;
 	
 	// connect each material to each shader, rinse and repeat
 		
