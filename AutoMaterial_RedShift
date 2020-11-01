@@ -1,6 +1,6 @@
 string $selectedObjs[] = `ls -sl`;
 string $filePrefix = "WHEEL_"; // if your texture files are created with a prefix from your painting program, add that here
-string $strDir    = "G:/GoogleDrive/VFX/ESOURCES/REPOSITORY/VEHICLES/CARS/WHEEL/22INCH/TEXTURES/"+$filePrefix; //edit what's between the quotes only to specify the location of your textures on your hard drive
+string $strDir    = "G:/GoogleDrive/VFX/ESOURCES/REPOSITORY/VEHICLES/CARS/WHEEL/22INCH/TEXTURES/"+$filePrefix+""; //edit what's between the quotes only to specify the location of your textures on your hard drive
 string $ext = ".exr"; //texture file extension
 for ($obj in $selectedObjs){
 	string $newMat    = `shadingNode -asShader "RedshiftMaterial"`;
@@ -30,19 +30,19 @@ for ($obj in $selectedObjs){
 	// variables for the texture files nodes to be generated
 	
 	string $inputColor                    = $fileNodeColor                        + ".fileTextureName";
-	string $pathColor                     = $strDir + $obj                        + "_WE_Color"                    + $ext ;
+	string $pathColor                     = $strDir + $obj                        + "_Color"                    + $ext ;
 	string $inputDiffuse                  = $fileNodeDiffuse                      + ".fileTextureName";
-	string $pathDiffuse                   = $strDir + $obj                        + "_WE_Diffuse"                  + $ext ;
+	string $pathDiffuse                   = $strDir + $obj                        + "_Diffuse"                  + $ext ;
 	string $inputMetalness                = $fileNodeMetalness                    + ".fileTextureName";
-	string $pathMetalness                 = $strDir + $obj                        + "_WE_Metalness"                + $ext ;
+	string $pathMetalness                 = $strDir + $obj                        + "_Metalness"                + $ext ;
 	string $inputRoughness                = $fileNodeRoughness                    + ".fileTextureName";
-	string $pathRoughness                 = $strDir + $obj                        + "_WE_Roughness"                + $ext ;
+	string $pathRoughness                 = $strDir + $obj                        + "_oughness"                + $ext ;
 	string $inputEmissionColor            = $fileNodeEmissionColor                + ".fileTextureName";
-	string $pathEmissionColor             = $strDir + $obj                        + "_WE_EmissionColor"            + $ext ;	
+	string $pathEmissionColor             = $strDir + $obj                        + "_EmissionColor"            + $ext ;	
 	string $inputNormal                   = $fileNodeNormal                       + ".fileTextureName";
-	string $pathNormal                    = $strDir + $obj                        + "_WE_Normal"                   + $ext ;
+	string $pathNormal                    = $strDir + $obj                        + "_Normal"                   + $ext ;
 	string $inputDisplacementHeightField  = $fileNodeDisplacementHeightField      + ".fileTextureName";
-	string $pathDisplacementHeightField   = $strDir + $obj                        + "_WE_DisplacementHeightField"  + $ext ;	
+	string $pathDisplacementHeightField   = $strDir + $obj                        + "_DisplacementHeightField"  + $ext ;	
 	
 	// fill the texture channels of each shader with the appropriate PBR texture path
 				
