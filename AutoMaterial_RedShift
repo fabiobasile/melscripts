@@ -23,7 +23,7 @@ for ($obj in $selectedObjs){
 	connectAttr -f ( $obj + "_RS_Diffuse.outAlpha" ) ( $obj + "_RS.diffuse_weight" );
 	connectAttr -f ( $obj + "_RS_Metalness.outAlpha" ) ( $obj + "_RS.refl_weight" );
 	connectAttr -f ( $obj + "_RS_Roughness.outAlpha" ) ( $obj + "_RS.refl_roughness" );
-	connectAttr -f ( $obj + "_RS_EmissionColor.outColor" ) ( $obj + "_RS.EmissionColor" );
+	connectAttr -f ( $obj + "_RS_EmissionColor.outColor" ) ( $obj + "_RS.emission_color" );
 	connectAttr -f ( $obj + "_RS_Normal.outColor" ) ( $obj + "_RS.bump_input" );
 	connectAttr -f ( $obj + "_RS_DisplacementHeightField.outColor" ) ( $obj + "_RSSG.displacementShader" );
 	
