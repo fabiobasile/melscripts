@@ -1,5 +1,5 @@
 string $selectedObjs[] = `ls -sl`;
-string $filePrefix = "WHEEL"; // if your texture files are created with a prefix from your painting program, add that here
+string $filePrefix = "WHEEL_"; // if your texture files are created with a prefix from your painting program, add that here
 string $strDir    = "G:/GoogleDrive/VFX/ESOURCES/REPOSITORY/VEHICLES/CARS/WHEEL/22INCH/TEXTURES/"+$filePrefix; //edit what's between the quotes only to specify the location of your textures on your hard drive
 string $ext = ".exr"; //texture file extension
 for ($obj in $selectedObjs){
