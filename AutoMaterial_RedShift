@@ -49,6 +49,26 @@ for ($obj in $selectedObjs){
 	string $inputDisplaceHeightField      = $fileNodeDisplaceHeightField          + ".texMap";
 	string $pathDisplaceHeightField       = $strDir + $obj                        + "_RS_DisplaceHeightField"      + $ext ;	
 	
+	// variables for the texture files colorSpace attribute
+	
+	string $csColor                = $fileNodeColor                      + ".colorSpace";
+	string $csDiffuse              = $fileNodeDiffuse                    + ".colorSpace";
+	string $csMetalness            = $fileNodeMetalness                  + ".colorSpace";
+	string $csRoughness            = $fileNodeRoughness                  + ".colorSpace";
+	string $csEmissionColor        = $fileNodeEmissionColor              + ".colorSpace";
+	string $csNormal               = $fileNodeNormal                     + ".colorSpace";
+	string $csDisplaceHeightField  = $fileNodeDisplaceHeightFieldMap     + ".colorSpace";
+
+	// variables for ignoreColorSpaceFileRules
+	
+	string $csrulesColor                = $fileNodeColor                      + ".ignoreColorSpaceFileRules";
+	string $csrulesDiffuse              = $fileNodeDiffuse                    + ".ignoreColorSpaceFileRules";
+	string $csrulesMetalness            = $fileNodeMetalness                  + ".ignoreColorSpaceFileRules";
+	string $csrulesRoughness            = $fileNodeRoughness                  + ".ignoreColorSpaceFileRules";
+	string $csrulesEmissionColor        = $fileNodeEmissionColor              + ".ignoreColorSpaceFileRules";
+	string $csrulesNormal               = $fileNodeNormal                     + ".ignoreColorSpaceFileRules";
+	string $csrulesDisplaceHeightField  = $fileNodeDisplaceHeightFieldMap     + ".ignoreColorSpaceFileRules";
+	
 	// fill the texture channels of each shader with the appropriate PBR texture path
 				
 	setAttr -type "string" $inputColor                     $pathColor;
@@ -59,9 +79,26 @@ for ($obj in $selectedObjs){
 	setAttr -type "string" $inputNormal                    $pathNormal;
 	setAttr -type "string" $inputDisplaceHeightFieldMap    $pathDisplaceHeightField;
 	
+	//set ignoreColorSpaceFileRules to on and change colorSpace to raw
+			
+	setAttr $csrulesColor                1;
+	setAttr $csrulesDiffuse              1;
+	setAttr $csrulesMetalness            1;
+	setAttr $csrulesRoughness            1;
+	setAttr $csrulesEmissionColor        1;
+	setAttr $csrulesNormal               1;
+	setAttr $csrulesDisplaceHeightField  1;
+	
+	setAttr -type "string" $csColor                "Raw";
+	setAttr -type "string" $csDiffuse              "Raw";
+	setAttr -type "string" $csMetalness            "Raw";
+	setAttr -type "string" $csRoughness            "Raw";
+	setAttr -type "string" $csEmissionColor        "Raw";
+	setAttr -type "string" $csNormal               "Raw";
+	setAttr -type "string" $csDisplaceHeightField  "Raw";
+	
 	// connect each material to each shader, rinse and repeat
 		
 	connectAttr -f ($rnMat + ".outColor") ($newSG + ".surfaceShader");
 	sets -e -forceElement $newSG $obj;
 }
-
