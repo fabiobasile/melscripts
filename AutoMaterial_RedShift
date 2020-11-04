@@ -1,6 +1,6 @@
 string $selectedObjs[] = `ls -sl`;
-string $filePrefix = "prefix_"; // if your texture files are created with a prefix from your painting program, add that here
-string $strDir    = "C:/[PATH TO TEXTURES FOLDER]/"+$filePrefix+""; //edit what's between the quotes only to specify the location of your textures on your hard drive
+string $filePrefix = "prefix"; // if your texture files are created with a prefix from your painting program, add that here
+string $strDir    = "C:/[PATH TO TEXTURES FOLDER]/"+$filePrefix+"_"; //edit what's between the quotes only to specify the location of your textures on your hard drive
 string $ext = ".exr"; //texture file extension
 for ($obj in $selectedObjs){
 	string $newMat    = `shadingNode -asShader "RedshiftMaterial"`;
