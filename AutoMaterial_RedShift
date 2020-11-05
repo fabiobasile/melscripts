@@ -1,108 +1,110 @@
-string $selectedObjs[] = `ls -sl`;
-string $filePrefix = "prefix"; // if your texture files are created with a prefix from your painting program, add that here
+string $filePrefix = "[FILE_PREFIX]"; // if your texture files are created with a prefix from your painting program, add that here
+if(`namespace -exists $filePrefix`){
+    namespace -f -mv $filePrefix ":";
+    namespace -rm $filePrefix;
+}
 string $strDir    = "C:/[PATH TO TEXTURES FOLDER]/"+$filePrefix+"_"; //edit what's between the quotes only to specify the location of your textures on your hard drive
 string $ext = ".exr"; //texture file extension
+string $selectedObjs[] = `ls -sl`;
 for ($obj in $selectedObjs){
-	string $newMat    = `shadingNode -asShader "RedshiftMaterial"`;
-	string $rnMat     = `rename $newMat ($obj + "_RS")`;
-	string $newSG     = `sets -renderable true -noSurfaceShader true -empty -name ($rnMat + "SG")`;
-	
-	// variables for the shading nodes to be generated
-			
-	string $fileNodeColor                    = `shadingNode -asTexture file -name                 ($obj + "_RS_Color")`;
-	string $fileNodeDiffuse                  = `shadingNode -asTexture file -name                 ($obj + "_RS_Diffuse")`;
-	string $fileNodeMetalness                = `shadingNode -asTexture file -name                 ($obj + "_RS_Metalness")`;
-	string $fileNodeRoughness                = `shadingNode -asTexture file -name                 ($obj + "_RS_Roughness")`;
-	string $fileNodeEmissionColor            = `shadingNode -asTexture file -name                 ($obj + "_RS_EmissionColor")`;	
-	string $fileNodeNormal                   = `shadingNode -asUtility RedshiftBumpMap -name      ($obj + "_RS_Normal")`;
-	string $fileNodeNormalMap                = `shadingNode -asTexture file -name                 ($obj + "_RS_NormalMap")`;	
-	string $fileNodeDisplaceHeightField      = `shadingNode -asUtility RedshiftDisplacement -name ($obj + "_RS_DisplaceHeightField")`;
-	string $fileNodeDisplaceHeightFieldMap   = `shadingNode -asTexture file -name                 ($obj + "_RS_DisplaceHeightFieldMap")`;	
-
-	
-	// connect the file nodes to each shader shannels
-		
-	connectAttr -f ( $obj + "_RS_Color.outColor" )                    ( $obj + "_RS.diffuse_color" );
-	connectAttr -f ( $obj + "_RS_Diffuse.outAlpha" )                  ( $obj + "_RS.diffuse_weight" );
-	connectAttr -f ( $obj + "_RS_Metalness.outAlpha" )                ( $obj + "_RS.refl_weight" );
-	connectAttr -f ( $obj + "_RS_Roughness.outAlpha" )                ( $obj + "_RS.refl_roughness" );
-	connectAttr -f ( $obj + "_RS_EmissionColor.outColor" )            ( $obj + "_RS.emission_color" );
-	connectAttr -f ( $obj + "_RS_Normal.input" )                      ( $obj + "_RSSG.rsBumpmapShader" );
-	connectAttr -f ( $obj + "_RS_NormalMap.outColor" )                ( $obj + "_RS_Normal.input" );
-	connectAttr -f ( $obj + "_RS_DisplaceHeightField.texMap" )        ( $obj + "_RSSG.rsDisplacementShader" );
-	connectAttr -f ( $obj + "_RS_DisplaceHeightFieldMap.outColor" )   ( $obj + "_RS_DisplaceHeightField.texMap" );
-			
-	// variables for the texture files nodes to be generated
-	
-	string $inputColor                    = $fileNodeColor                        + ".fileTextureName";
-	string $pathColor                     = $strDir + $obj                        + "_RS_Color"                    + $ext ;
-	string $inputDiffuse                  = $fileNodeDiffuse                      + ".fileTextureName";
-	string $pathDiffuse                   = $strDir + $obj                        + "_RS_Diffuse"                  + $ext ;
-	string $inputMetalness                = $fileNodeMetalness                    + ".fileTextureName";
-	string $pathMetalness                 = $strDir + $obj                        + "_RS_Metalness"                + $ext ;
-	string $inputRoughness                = $fileNodeRoughness                    + ".fileTextureName";
-	string $pathRoughness                 = $strDir + $obj                        + "_RS_Roughness"                + $ext ;
-	string $inputEmissionColor            = $fileNodeEmissionColor                + ".fileTextureName";
-	string $pathEmissionColor             = $strDir + $obj                        + "_RS_EmissionColor"            + $ext ;		
-	string $inputNormalMap                = $fileNodeNormalMap                    + ".fileTextureName";
-	string $pathNormalMap                 = $strDir + $obj                        + "_RS_NormalMap"                + $ext ;
-	string $inputNormal                   = $fileNodeNormal                       + ".input";
-	string $pathNormal                    = $strDir + $obj                        + "_RS_Normal"                   + $ext ;		
-	string $inputDisplaceHeightFieldMap   = $fileNodeDisplaceHeightFieldMap       + ".fileTextureName";
-	string $pathDisplaceHeightFieldMap    = $strDir + $obj                        + "_RS_DisplaceHeightFieldMap"   + $ext ;	
-	string $inputDisplaceHeightField      = $fileNodeDisplaceHeightField          + ".texMap";
-	string $pathDisplaceHeightField       = $strDir + $obj                        + "_RS_DisplaceHeightField"      + $ext ;	
-	
-	// variables for the texture files colorSpace attribute
-	
-	string $csColor                = $fileNodeColor                      + ".colorSpace";
-	string $csDiffuse              = $fileNodeDiffuse                    + ".colorSpace";
-	string $csMetalness            = $fileNodeMetalness                  + ".colorSpace";
-	string $csRoughness            = $fileNodeRoughness                  + ".colorSpace";
-	string $csEmissionColor        = $fileNodeEmissionColor              + ".colorSpace";
-	string $csNormal               = $fileNodeNormalMap                  + ".colorSpace";
-	string $csDisplaceHeightField  = $fileNodeDisplaceHeightFieldMap     + ".colorSpace";
-
-	// variables for ignoreColorSpaceFileRules
-	
-	string $csrulesColor                = $fileNodeColor                      + ".ignoreColorSpaceFileRules";
-	string $csrulesDiffuse              = $fileNodeDiffuse                    + ".ignoreColorSpaceFileRules";
-	string $csrulesMetalness            = $fileNodeMetalness                  + ".ignoreColorSpaceFileRules";
-	string $csrulesRoughness            = $fileNodeRoughness                  + ".ignoreColorSpaceFileRules";
-	string $csrulesEmissionColor        = $fileNodeEmissionColor              + ".ignoreColorSpaceFileRules";
-	string $csrulesNormal               = $fileNodeNormalMap                  + ".ignoreColorSpaceFileRules";
-	string $csrulesDisplaceHeightField  = $fileNodeDisplaceHeightFieldMap     + ".ignoreColorSpaceFileRules";
-	
-	// fill the texture channels of each shader with the appropriate PBR texture path
-				
-	setAttr -type "string" $inputColor                     $pathColor;
-	setAttr -type "string" $inputDiffuse                   $pathDiffuse;
-	setAttr -type "string" $inputMetalness                 $pathMetalness;
-	setAttr -type "string" $inputRoughness                 $pathRoughness;
-	setAttr -type "string" $inputEmissionColor             $pathEmissionColor;	
-	setAttr -type "string" $inputNormalMap                 $pathNormal;
-	setAttr -type "string" $inputDisplaceHeightFieldMap    $pathDisplaceHeightField;
-	
-	//set ignoreColorSpaceFileRules to on and change colorSpace to raw
-			
-	setAttr $csrulesColor                1;
-	setAttr $csrulesDiffuse              1;
-	setAttr $csrulesMetalness            1;
-	setAttr $csrulesRoughness            1;
-	setAttr $csrulesEmissionColor        1;
-	setAttr $csrulesNormal               1;
-	setAttr $csrulesDisplaceHeightField  1;
-	
-	setAttr -type "string" $csColor                "Raw";
-	setAttr -type "string" $csDiffuse              "Raw";
-	setAttr -type "string" $csMetalness            "Raw";
-	setAttr -type "string" $csRoughness            "Raw";
-	setAttr -type "string" $csEmissionColor        "Raw";
-	setAttr -type "string" $csNormal               "Raw";
-	setAttr -type "string" $csDisplaceHeightField  "Raw";
-	
-	// connect each material to each shader, rinse and repeat
-		
-	connectAttr -f ($rnMat + ".outColor") ($newSG + ".surfaceShader");
-	sets -e -forceElement $newSG $obj;
+    string $newMat    = `shadingNode -asShader "RedshiftMaterial"`;
+    string $rnMat     = `rename $newMat ($obj + "_RS")`;
+    string $newSG     = `sets -renderable true -noSurfaceShader true -empty -name ($rnMat + "SG")`;
+    	
+    // variables for the shading nodes to be generated
+    			
+    string $fileNodeColor                    = `shadingNode -asTexture file -name                 ($obj + "_RS_Color")`;
+    string $fileNodeDiffuse                  = `shadingNode -asTexture file -name                 ($obj + "_RS_Diffuse")`;
+    string $fileNodeMetalness                = `shadingNode -asTexture file -name                 ($obj + "_RS_Metalness")`;
+    string $fileNodeRoughness                = `shadingNode -asTexture file -name                 ($obj + "_RS_Roughness")`;
+    string $fileNodeEmissionColor            = `shadingNode -asTexture file -name                 ($obj + "_RS_EmissionColor")`;	
+    string $fileNodeNormal                   = `shadingNode -asUtility RedshiftBumpMap -name      ($obj + "_RS_Normal")`;
+    string $fileNodeNormalMap                = `shadingNode -asTexture file -name                 ($obj + "_RS_NormalMap")`;	
+    string $fileNodeDisplaceHeightField      = `shadingNode -asUtility RedshiftDisplacement -name ($obj + "_RS_DisplaceHeightField")`;
+    string $fileNodeDisplaceHeightFieldMap   = `shadingNode -asTexture file -name                 ($obj + "_RS_DisplaceHeightFieldMap")`;	
+        	
+    // connect the file nodes to each shader shannels
+    	
+    connectAttr -f ( $obj + "_RS_Color.outColor" )                    ( $obj + "_RS.diffuse_color" );
+    connectAttr -f ( $obj + "_RS_Diffuse.outAlpha" )                  ( $obj + "_RS.diffuse_weight" );
+    connectAttr -f ( $obj + "_RS_Metalness.outAlpha" )                ( $obj + "_RS.refl_weight" );
+    connectAttr -f ( $obj + "_RS_Roughness.outAlpha" )                ( $obj + "_RS.refl_roughness" );
+    connectAttr -f ( $obj + "_RS_EmissionColor.outColor" )            ( $obj + "_RS.emission_color" );
+    connectAttr -f ( $obj + "_RS_Normal.input" )                      ( $obj + "_RSSG.rsBumpmapShader" );
+    connectAttr -f ( $obj + "_RS_NormalMap.outColor" )                ( $obj + "_RS_Normal.input" );
+    connectAttr -f ( $obj + "_RS_DisplaceHeightField.texMap" )        ( $obj + "_RSSG.rsDisplacementShader" );
+    connectAttr -f ( $obj + "_RS_DisplaceHeightFieldMap.outColor" )   ( $obj + "_RS_DisplaceHeightField.texMap" );
+    		
+    // variables for the texture files nodes to be generated
+    
+    string $inputColor                    = $fileNodeColor                        + ".fileTextureName";
+    string $pathColor                     = $strDir + $obj                        + "_RS_Color"                    + $ext ;
+    string $inputDiffuse                  = $fileNodeDiffuse                      + ".fileTextureName";
+    string $pathDiffuse                   = $strDir + $obj                        + "_RS_Diffuse"                  + $ext ;
+    string $inputMetalness                = $fileNodeMetalness                    + ".fileTextureName";
+    string $pathMetalness                 = $strDir + $obj                        + "_RS_Metalness"                + $ext ;
+    string $inputRoughness                = $fileNodeRoughness                    + ".fileTextureName";
+    string $pathRoughness                 = $strDir + $obj                        + "_RS_Roughness"                + $ext ;
+    string $inputEmissionColor            = $fileNodeEmissionColor                + ".fileTextureName";
+    string $pathEmissionColor             = $strDir + $obj                        + "_RS_EmissionColor"            + $ext ;		
+    string $inputNormalMap                = $fileNodeNormalMap                    + ".fileTextureName";
+    string $pathNormalMap                 = $strDir + $obj                        + "_RS_NormalMap"                + $ext ;
+    string $inputNormal                   = $fileNodeNormal                       + ".input";
+    string $pathNormal                    = $strDir + $obj                        + "_RS_Normal"                   + $ext ;		
+    string $inputDisplaceHeightFieldMap   = $fileNodeDisplaceHeightFieldMap       + ".fileTextureName";
+    string $pathDisplaceHeightFieldMap    = $strDir + $obj                        + "_RS_DisplaceHeightFieldMap"   + $ext ;	
+    string $inputDisplaceHeightField      = $fileNodeDisplaceHeightField          + ".texMap";
+    string $pathDisplaceHeightField       = $strDir + $obj                        + "_RS_DisplaceHeightField"      + $ext ;	
+    	
+    // variables for the texture files colorSpace attribute
+    
+    string $csColor                = $fileNodeColor                      + ".colorSpace";
+    string $csDiffuse              = $fileNodeDiffuse                    + ".colorSpace";
+    string $csMetalness            = $fileNodeMetalness                  + ".colorSpace";
+    string $csRoughness            = $fileNodeRoughness                  + ".colorSpace";
+    string $csEmissionColor        = $fileNodeEmissionColor              + ".colorSpace";
+    string $csNormal               = $fileNodeNormalMap                  + ".colorSpace";
+    string $csDisplaceHeightField  = $fileNodeDisplaceHeightFieldMap     + ".colorSpace";
+        	// variables for ignoreColorSpaceFileRules
+    
+    string $csrulesColor                = $fileNodeColor                      + ".ignoreColorSpaceFileRules";
+    string $csrulesDiffuse              = $fileNodeDiffuse                    + ".ignoreColorSpaceFileRules";
+    string $csrulesMetalness            = $fileNodeMetalness                  + ".ignoreColorSpaceFileRules";
+    string $csrulesRoughness            = $fileNodeRoughness                  + ".ignoreColorSpaceFileRules";
+    string $csrulesEmissionColor        = $fileNodeEmissionColor              + ".ignoreColorSpaceFileRules";
+    string $csrulesNormal               = $fileNodeNormalMap                  + ".ignoreColorSpaceFileRules";
+    string $csrulesDisplaceHeightField  = $fileNodeDisplaceHeightFieldMap     + ".ignoreColorSpaceFileRules";
+    
+    // fill the texture channels of each shader with the appropriate PBR texture path
+    			
+    setAttr -type "string" $inputColor                     $pathColor;
+    setAttr -type "string" $inputDiffuse                   $pathDiffuse;
+    setAttr -type "string" $inputMetalness                 $pathMetalness;
+    setAttr -type "string" $inputRoughness                 $pathRoughness;
+    setAttr -type "string" $inputEmissionColor             $pathEmissionColor;	
+    setAttr -type "string" $inputNormalMap                 $pathNormal;
+    setAttr -type "string" $inputDisplaceHeightFieldMap    $pathDisplaceHeightField;
+    	
+    //set ignoreColorSpaceFileRules to on and change colorSpace to raw
+    		
+    setAttr $csrulesColor                1;
+    setAttr $csrulesDiffuse              1;
+    setAttr $csrulesMetalness            1;
+    setAttr $csrulesRoughness            1;
+    setAttr $csrulesEmissionColor        1;
+    setAttr $csrulesNormal               1;
+    setAttr $csrulesDisplaceHeightField  1;
+    
+    setAttr -type "string" $csColor                "Raw";
+    setAttr -type "string" $csDiffuse              "Raw";
+    setAttr -type "string" $csMetalness            "Raw";
+    setAttr -type "string" $csRoughness            "Raw";
+    setAttr -type "string" $csEmissionColor        "Raw";
+    setAttr -type "string" $csNormal               "Raw";
+    setAttr -type "string" $csDisplaceHeightField  "Raw";
+    
+    // connect each material to each shader, rinse and repeat
+    	
+    connectAttr -f ($rnMat + ".outColor") ($newSG + ".surfaceShader");
+    sets -e -forceElement $newSG $obj;
 }
