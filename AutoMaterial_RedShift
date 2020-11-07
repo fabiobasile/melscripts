@@ -1,46 +1,6 @@
 /////////////////////// AutoMaterial_Redshift Node Generator ///////////////////////
 ///////////////////////           By: Fabio Basile           ///////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
-///|----------------------------------------------------------------------------|///
-///|           This MEL script is currently under early development.            |///
-///|                          !!  USE AT OWN RISK !!                            |///
-///|----------------------------------------------------------------------------|///
-////////////////////////////////////////////////////////////////////////////////////
-
-// specify your PBR shader suffixes here and ensure that the same naming convention is followed by your painting program export settings
-// If you don't need a particular PBR network to be generated, leave the specific variable blank like so: "" DO NOT LEAVE SPACES.
-
-string $PBR_C = "Color";                       //Color
-string $PBR_D = "Diffuse";                     //Diffuse
-string $PBR_M = "Metalness";                   //Metalness / Reflectivity / Shine
-string $PBR_R = "Roughness";                   //Roughness / Microdetails
-string $PBR_E = "EmissionColor";               //Emission / Luminosity
-string $PBR_O = "Opacity";   	               //Opacity / Transparency
-string $PBR_N = "Normal";                      //Bump map
-string $PBR_H = "DisplaceHeightField";         //Displacement / Heightfield
-
-string $filePrefix = "[PREFIX]"; // if your texture files are created with a prefix from your painting program, add that here
-string $strDir    = "[PATH TO TEXTURES FOLDER]"+$filePrefix+"_"; //edit what's between the quotes only, to specify the location of your textures on your hard drive
-string $ext = ".exr"; //texture file extension
-string $selectedObjs[] = `ls -sl`; // ITERATE ALL OBJECTS SELECTED
-
-//////////////////////////////////////////////////////////////////////////
-////////////// !!!   DO NOT MODIFY BELOW THIS LINE   !!! /////////////////
-////////////// !!! UNLESS YOU KNOW WHAT YOU'RE DOING !!! /////////////////
-//////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-/////////////////////// AutoMaterial_Redshift Node Generator ///////////////////////
-///////////////////////           By: Fabio Basile           ///////////////////////
-////////////////////////////////////////////////////////////////////////////////////
 ///|----------------------------------------------------------------------------|///   
 ///|           This MEL script is currently under early development.            |/// 
 ///|                          !!  USE AT OWN RISK !!                            |///
