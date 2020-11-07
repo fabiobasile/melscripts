@@ -1,4 +1,11 @@
-string $filePrefix = "[FILE_PREFIX]"; // if your texture files are created with a prefix from your painting program, add that here
+/////////////////////// AutoMAterial_Redshift Node Generator ///////////////////////
+///////////////////////           By: Fabio Basile           ///////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+///|----------------------------------------------------------------------------|///   
+///|           This MEL script is currently under early development.            |/// 
+///|                          !!  USE AT OWN RISK !!                            |///
+///|----------------------------------------------------------------------------|///
+////////////////////////////////////////////////////////////////////////////////////
 
 // specify your PBR shader suffixes here and ensure that the same naming convention is followed by your painting program export settings
 // If you don't need a particular PBR network to be generated, leave the specific variable blank like so: "" DO NOT LEAVE SPACES.
@@ -11,6 +18,8 @@ string $PBR_E = "EmissionColor";               //Emission / Luminosity
 string $PBR_o = "Opacity";   	               //Opacity / Transparency
 string $PBR_N = "Normal";                      //Bump map
 string $PBR_H = "DisplaceHeightField";         //Displacement / Heightfield
+
+string $filePrefix = "[FILE_PREFIX]"; // if your texture files are created with a prefix from your painting program, add that here
 
 //////////////////////////////////////////////////////////////////////////
 ////////////// !!!   DO NOT MODIFY BELOW THIS LINE   !!! /////////////////
