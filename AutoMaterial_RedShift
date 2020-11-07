@@ -20,20 +20,20 @@ string $PBR_N = "Normal";                      //Bump map
 string $PBR_H = "DisplaceHeightField";         //Displacement / Heightfield
 
 string $filePrefix = "[PREFIX]"; // if your texture files are created with a prefix from your painting program, add that here
-if(`namespace -exists $filePrefix`){
-    namespace -f -mv $filePrefix ":";
-    namespace -rm $filePrefix;
-}
 string $strDir    = "[PATH TO TEXTURES FOLDER]"+$filePrefix+"_"; //edit what's between the quotes only, to specify the location of your textures on your hard drive
-
-
 string $ext = ".exr"; //texture file extension
+string $selectedObjs[] = `ls -sl`; // ITERATE ALL OBJECTS SELECTED
+
 //////////////////////////////////////////////////////////////////////////
 ////////////// !!!   DO NOT MODIFY BELOW THIS LINE   !!! /////////////////
 ////////////// !!! UNLESS YOU KNOW WHAT YOU'RE DOING !!! /////////////////
 //////////////////////////////////////////////////////////////////////////
 
-string $selectedObjs[] = `ls -sl`;
+if(`namespace -exists $filePrefix`){
+    namespace -f -mv $filePrefix ":";
+    namespace -rm $filePrefix;
+}
+
 for ($obj in $selectedObjs){
     string $newMat    = `shadingNode -asShader "RedshiftMaterial"`;
     string $rnMat     = `rename $newMat ($obj + "_RS")`;
@@ -132,7 +132,7 @@ for ($obj in $selectedObjs){
 		setAttr -type "string" $csN "Raw";
 	}	
 	// GENERATE PBR DISPLACEMENT NODES AND SETTINGS
-	if($PBR_N != ""){
+	if($PBR_H != ""){
 		string $fileNodeH    = `shadingNode -asUtility RedshiftDisplacement -name ($obj + "_RS_" + $PBR_H)`;
 		string $fileNodeHM   = `shadingNode -asTexture file -name                 ($obj + "_RS_" + $PBR_H + "M")`;	
 		connectAttr -f ( $obj + "_RS_" + $PBR_H + ".texMap" )                     ($obj + "_RSSG.rsDisplacementShader" );
