@@ -15,23 +15,22 @@ string $PBR_D = "Diffuse";                     //Diffuse
 string $PBR_M = "Metalness";                   //Metalness / Reflectivity / Shine
 string $PBR_R = "Roughness";                   //Roughness / Microdetails
 string $PBR_E = "EmissionColor";               //Emission / Luminosity
-string $PBR_o = "Opacity";   	               //Opacity / Transparency
+string $PBR_O = "Opacity";   	               //Opacity / Transparency
 string $PBR_N = "Normal";                      //Bump map
 string $PBR_H = "DisplaceHeightField";         //Displacement / Heightfield
 
-string $filePrefix = "[FILE_PREFIX]"; // if your texture files are created with a prefix from your painting program, add that here
+string $filePrefix = "[PREFIX]"; // if your texture files are created with a prefix from your painting program, add that here
+if(`namespace -exists $filePrefix`){
+    namespace -f -mv $filePrefix ":";
+    namespace -rm $filePrefix;
+}
+string $strDir    = "[PATH TO TEXTURES FOLDER]"+$filePrefix+"_"; //edit what's between the quotes only, to specify the location of your textures on your hard drive
 
 //////////////////////////////////////////////////////////////////////////
 ////////////// !!!   DO NOT MODIFY BELOW THIS LINE   !!! /////////////////
 ////////////// !!! UNLESS YOU KNOW WHAT YOU'RE DOING !!! /////////////////
 //////////////////////////////////////////////////////////////////////////
 
-if(`namespace -exists $filePrefix`){
-    namespace -f -mv $filePrefix ":";
-    namespace -rm $filePrefix;
-}
-
-string $strDir    = "C:/[PATH TO TEXTURES FOLDER]/"+$filePrefix+"_"; //edit what's between the quotes only to specify the location of your textures on your hard drive
 string $ext = ".exr"; //texture file extension
 string $selectedObjs[] = `ls -sl`;
 for ($obj in $selectedObjs){
@@ -43,7 +42,7 @@ for ($obj in $selectedObjs){
 	
 	// GENERATE PBR COLOR NODES AND SETTINGS
 	
-	if(`$PBR_C != ""`){
+	if($PBR_C != ""){
 		string $fileNodeC    = `shadingNode -asTexture file -name ($obj + "_RS_" + $PBR_C)`;
 		connectAttr -f ( $obj + "_RS_" + $PBR_C + ".outColor" )   ($obj + "_RS.diffuse_color" );
 		string $inputC    = $fileNodeC          + ".fileTextureName";
@@ -56,7 +55,7 @@ for ($obj in $selectedObjs){
 	}
 	
 	// GENERATE PBR DIFFUSE NODES AND SETTINGS
-	if(`$PBR_D != ""`){
+	if($PBR_D != ""){
 		string $fileNodeD    = `shadingNode -asTexture file -name ($obj + "_RS_" + $PBR_D)`;
 		connectAttr -f ( $obj + "_RS_" + $PBR_D + ".outAlpha" )   ($obj + "_RS.diffuse_weight" );
 		string $inputD    = $fileNodeD          + ".fileTextureName";
@@ -68,7 +67,7 @@ for ($obj in $selectedObjs){
 		setAttr -type "string" $csD "Raw";
 	}	
 	// GENERATE PBR METALLICITY NODES AND SETTINGS
-	if(`$PBR_M != ""`){
+	if($PBR_M != ""){
 		string $fileNodeM    = `shadingNode -asTexture file -name ($obj + "_RS_" + $PBR_M)`;
 		connectAttr -f ( $obj + "_RS_" + $PBR_M + ".outAlpha" )   ($obj + "_RS.refl_weight" );
 		string $inputM    = $fileNodeM          + ".fileTextureName";
@@ -80,7 +79,7 @@ for ($obj in $selectedObjs){
 		setAttr -type "string" $csM "Raw";
 	}	
 	// GENERATE PBR ROUGHNESS NODES AND SETTINGS
-	if(`$PBR_R != ""`){
+	if($PBR_R != ""){
 		string $fileNodeR    = `shadingNode -asTexture file -name ($obj + "_RS_" + $PBR_R)`;
 		connectAttr -f ( $obj + "_RS_" + $PBR_R + ".outAlpha" )   ($obj + "_RS.refl_roughness" );
 		string $inputR    = $fileNodeR          + ".fileTextureName";
@@ -92,9 +91,9 @@ for ($obj in $selectedObjs){
 		setAttr -type "string" $csR "Raw";
 	}	
 	// GENERATE PBR EMISSION NODES AND SETTINGS
-	if(`$PBR_E != ""`){
+	if($PBR_E != ""){
 		string $fileNodeE    = `shadingNode -asTexture file -name ($obj + "_RS_" + $PBR_E)`;
-		connectAttr -f ( $obj + "_RS_" + $PBR_E) + ".outColor" )   ($obj + "_RS.emission_color" );
+		connectAttr -f ( $obj + "_RS_" + $PBR_E + ".outColor" )  ($obj + "_RS.emission_color" );
 		string $inputE    = $fileNodeE           + ".fileTextureName";
 		string $pathE     = $strDir + $obj       + "_RS_" + $PBR_E + $ext ;
 		string $csE  = $fileNodeE                + ".colorSpace";
@@ -104,9 +103,9 @@ for ($obj in $selectedObjs){
 		setAttr -type "string" $csE "Raw";
 	}	
 	// GENERATE PBR OPACITY NODES AND SETTINGS
-	if(`$PBR_O != ""`){
+	if($PBR_O != ""){
 		string $fileNodeO    = `shadingNode -asTexture file -name ($obj + "_RS_" + $PBR_O)`;
-		connectAttr -f ( $obj + "_RS_" + $PBR_O) + ".outAlpha" )   ( $obj + "_RS.opacity_color" );
+		connectAttr -f ( $obj + "_RS_" + $PBR_O + ".outColor" )   ( $obj + "_RS.opacity_color" );
 		string $pathO     = $strDir + $obj       + "_RS_" + $PBR_O + $ext ;
 		string $inputO    = $fileNodeO           + ".fileTextureName";
 		string $csO  = $fileNodeO                + ".colorSpace";
@@ -116,14 +115,14 @@ for ($obj in $selectedObjs){
 		setAttr -type "string" $csO "Raw";
 	}	
 	// GENERATE PBR NORMAL NODES AND SETTINGS
-	if(`$PBR_N != ""`){
+	if($PBR_N != ""){
 		string $fileNodeN    = `shadingNode -asUtility RedshiftBumpMap -name ($obj + "_RS_" + $PBR_N)`;
-		string $fileNodeNM   = `shadingNode -asTexture file -name            ($obj + "_RS_" + $PBR_N + "Map")`;	
+		string $fileNodeNM   = `shadingNode -asTexture file -name            ($obj + "_RS_" + $PBR_N + "M")`;	
 		connectAttr -f ( $obj + "_RS_" + $PBR_N + ".input" )                 ($obj + "_RSSG.rsBumpmapShader" );
 		connectAttr -f ( $obj + "_RS_" + $PBR_N + "M.outColor" )             ($obj + "_RS_Normal.input" );	
-		string $inputN    = $fileNodeNM         + ".fileTextureName";
+		string $inputNM    = $fileNodeNM         + ".fileTextureName";
 		string $pathNM    = $strDir + $obj      + "_RS_" + $PBR_N + "M" + $ext ;
-		string $inputN    = $fileNodeN          + ".input";
+		string $inputN   = $fileNodeN          + ".input";
 		string $pathN     = $strDir + $obj      + "_RS_" + $PBR_N + $ext ;
 		string $csN  = $fileNodeNM              + ".colorSpace";
 		string $csrulesN = $fileNodeNM          + ".ignoreColorSpaceFileRules";
@@ -132,9 +131,9 @@ for ($obj in $selectedObjs){
 		setAttr -type "string" $csN "Raw";
 	}	
 	// GENERATE PBR DISPLACEMENT NODES AND SETTINGS
-	if(`$PBR_N != ""`){
+	if($PBR_N != ""){
 		string $fileNodeH    = `shadingNode -asUtility RedshiftDisplacement -name ($obj + "_RS_" + $PBR_H)`;
-		string $fileNodeHM   = `shadingNode -asTexture file -name                 ($obj + "_RS_" + $PBR_H + "Map")`;	
+		string $fileNodeHM   = `shadingNode -asTexture file -name                 ($obj + "_RS_" + $PBR_H + "M")`;	
 		connectAttr -f ( $obj + "_RS_" + $PBR_H + ".texMap" )                     ($obj + "_RSSG.rsDisplacementShader" );
 		connectAttr -f ( $obj + "_RS_" + $PBR_H + "M.outColor" )                  ($obj + "_RS_DisplaceHeightField.texMap" );
 		string $inputHM   = $fileNodeHM         + ".fileTextureName";
