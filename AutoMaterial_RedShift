@@ -29,6 +29,47 @@ string $selectedObjs[] = `ls -sl`; // ITERATE ALL OBJECTS SELECTED
 ////////////// !!! UNLESS YOU KNOW WHAT YOU'RE DOING !!! /////////////////
 //////////////////////////////////////////////////////////////////////////
 
+
+
+
+
+
+
+
+
+
+/////////////////////// AutoMaterial_Redshift Node Generator ///////////////////////
+///////////////////////           By: Fabio Basile           ///////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+///|----------------------------------------------------------------------------|///   
+///|           This MEL script is currently under early development.            |/// 
+///|                          !!  USE AT OWN RISK !!                            |///
+///|----------------------------------------------------------------------------|///
+////////////////////////////////////////////////////////////////////////////////////
+
+// specify your PBR shader suffixes here and ensure that the same naming convention is followed by your painting program export settings
+// If you don't need a particular PBR network to be generated, leave the specific variable blank like so: "" DO NOT LEAVE SPACES.
+
+string $PBR_C     = "Color";                       //Color
+string $PBR_D     = "Diffuse";                     //Diffuse
+string $PBR_M     = "Metalness";                   //Metalness / Reflectivity / Shine
+string $PBR_R     = "Roughness";                   //Roughness / Microdetails
+string $PBR_E     = "EmissionColor";               //Emission / Luminosity
+string $PBR_O     = "Opacity";   	               //Opacity / Transparency
+string $PBR_IOR   = "Ior";                         //Index Of Refraction
+string $PBR_N     = "Normal";                      //Bump map
+string $PBR_H     = "DisplaceHeightField";         //Displacement / Heightfield
+
+string $filePrefix = "[PREFIX]"; // Type a prefix for your painting program to use when saving your maps
+string $strDir     = "[PATH TO TEXTURES FOLDER]"+$filePrefix+"_"; //edit what's between the quotes only, to specify the location of your textures on your hard drive. REMEMBER TO CHANGE ALL YOUR FORWARD ( \ ) SLASHES INTO BACKSLASHES ( / )
+string $ext        = "exr"; //texture file extension
+string $selectedObjs[] = `ls -sl`; // ITERATE ALL OBJECTS SELECTED
+
+//////////////////////////////////////////////////////////////////////////
+////////////// !!!   DO NOT MODIFY BELOW THIS LINE   !!! /////////////////
+////////////// !!! UNLESS YOU KNOW WHAT YOU'RE DOING !!! /////////////////
+//////////////////////////////////////////////////////////////////////////
+
 if(`namespace -exists $filePrefix`){
     namespace -f -mv $filePrefix ":";
     namespace -rm $filePrefix;
@@ -91,8 +132,8 @@ for ($obj in $selectedObjs){
 		connectAttr -f ( $obj + "_RS_" + $PBR_R + ".outAlpha" )   ($obj + "_RS.refl_roughness" );
 		string $inputR    = $fileNodeR          + ".fileTextureName";
 		string $pathR     = $strDir + $obj      + "_RS_" + $PBR_R + "." + $ext ;
-		string $csR  = $fileNodeR               + ".colorSpace";
-		string $csrulesR = $fileNodeR           + ".ignoreColorSpaceFileRules";
+		string $csR       = $fileNodeR          + ".colorSpace";
+		string $csrulesR  = $fileNodeR          + ".ignoreColorSpaceFileRules";
 		setAttr -type "string" $inputR  $pathR;
 		if($ext == "exr"){
     		setAttr $csrulesR 1;
@@ -105,8 +146,8 @@ for ($obj in $selectedObjs){
 		connectAttr -f ( $obj + "_RS_" + $PBR_E + ".outColor" )  ($obj + "_RS.emission_color" );
 		string $inputE    = $fileNodeE           + ".fileTextureName";
 		string $pathE     = $strDir + $obj       + "_RS_" + $PBR_E + "." + $ext ;
-		string $csE  = $fileNodeE                + ".colorSpace";
-		string $csrulesE = $fileNodeE            + ".ignoreColorSpaceFileRules";
+		string $csE       = $fileNodeE           + ".colorSpace";
+		string $csrulesE  = $fileNodeE           + ".ignoreColorSpaceFileRules";
 		setAttr -type "string" $inputE  $pathE;	
 		if($ext == "exr"){
     		setAttr $csrulesE 1;
@@ -119,12 +160,26 @@ for ($obj in $selectedObjs){
 		connectAttr -f ( $obj + "_RS_" + $PBR_O + ".outColor" )   ( $obj + "_RS.opacity_color" );
 		string $pathO     = $strDir + $obj       + "_RS_" + $PBR_O + "." + $ext ;
 		string $inputO    = $fileNodeO           + ".fileTextureName";
-		string $csO  = $fileNodeO                + ".colorSpace";
-		string $csrulesO = $fileNodeO            + ".ignoreColorSpaceFileRules";
+		string $csO       = $fileNodeO           + ".colorSpace";
+		string $csrulesO  = $fileNodeO           + ".ignoreColorSpaceFileRules";
 		setAttr -type "string" $inputO  $pathO;	
 		if($ext == "exr"){
     		setAttr $csrulesO 1;
     		setAttr -type "string" $csO "Raw";
+    	}
+	}	
+	// GENERATE PBR REFRACTION NODES AND SETTINGS
+	if($PBR_IOR != ""){
+		string $fileNodeIOR    = `shadingNode -asTexture file -name ($obj + "_RS_" + $PBR_IOR)`;
+		connectAttr -f ( $obj + "_RS_" + $PBR_IOR + ".outAlpha" )   ( $obj + "_RS.refr_weight" );
+		string $pathIOR     = $strDir + $obj         + "_RS_" + $PBR_IOR + "." + $ext ;
+		string $inputIOR    = $fileNodeIOR           + ".fileTextureName";
+		string $csIOR       = $fileNodeIOR           + ".colorSpace";
+		string $csrulesIOR  = $fileNodeIOR           + ".ignoreColorSpaceFileRules";
+		setAttr -type "string" $inputIOR  $pathIOR;	
+		if($ext == "exr"){
+    		setAttr $csrulesIOR 1;
+    		setAttr -type "string" $csIOR "Raw";
     	}
 	}	
 	// GENERATE PBR NORMAL NODES AND SETTINGS
@@ -133,9 +188,9 @@ for ($obj in $selectedObjs){
 		string $fileNodeNM   = `shadingNode -asTexture file -name            ($obj + "_RS_" + $PBR_N + "M")`;	
 		connectAttr -f ( $obj + "_RS_" + $PBR_N + ".input" )                 ($obj + "_RSSG.rsBumpmapShader" );
 		connectAttr -f ( $obj + "_RS_" + $PBR_N + "M.outColor" )             ($obj + "_RS_Normal.input" );	
-		string $inputNM    = $fileNodeNM         + ".fileTextureName";
+		string $inputNM   = $fileNodeNM         + ".fileTextureName";
 		string $pathNM    = $strDir + $obj      + "_RS_" + $PBR_N + "M" + "." + $ext ;
-		string $inputN   = $fileNodeN          + ".input";
+		string $inputN    = $fileNodeN          + ".input";
 		string $pathN     = $strDir + $obj      + "_RS_" + $PBR_N + "." + $ext ;
 		string $csN  = $fileNodeNM              + ".colorSpace";
 		string $csrulesN = $fileNodeNM          + ".ignoreColorSpaceFileRules";
@@ -161,8 +216,9 @@ for ($obj in $selectedObjs){
 		if($ext == "exr"){
     		setAttr $csrulesH 1;
     		setAttr -type "string" $csH "Raw";
+    	}
 	}	
-
+    
     // connect each material to each shader, rinse and repeat
     	
     connectAttr -f ($rnMat + ".outColor") ($newSG + ".surfaceShader");
