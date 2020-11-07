@@ -161,9 +161,8 @@ for ($obj in $selectedObjs){
 		if($ext == "exr"){
     		setAttr $csrulesH 1;
     		setAttr -type "string" $csH "Raw";
-    	}
 	}	
-    
+
     // connect each material to each shader, rinse and repeat
     	
     connectAttr -f ($rnMat + ".outColor") ($newSG + ".surfaceShader");
