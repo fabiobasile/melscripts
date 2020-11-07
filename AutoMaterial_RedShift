@@ -26,12 +26,13 @@ if(`namespace -exists $filePrefix`){
 }
 string $strDir    = "[PATH TO TEXTURES FOLDER]"+$filePrefix+"_"; //edit what's between the quotes only, to specify the location of your textures on your hard drive
 
+
+string $ext = ".exr"; //texture file extension
 //////////////////////////////////////////////////////////////////////////
 ////////////// !!!   DO NOT MODIFY BELOW THIS LINE   !!! /////////////////
 ////////////// !!! UNLESS YOU KNOW WHAT YOU'RE DOING !!! /////////////////
 //////////////////////////////////////////////////////////////////////////
 
-string $ext = ".exr"; //texture file extension
 string $selectedObjs[] = `ls -sl`;
 for ($obj in $selectedObjs){
     string $newMat    = `shadingNode -asShader "RedshiftMaterial"`;
