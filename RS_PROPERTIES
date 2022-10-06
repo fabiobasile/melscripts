@@ -1,0 +1,22 @@
+///////// SPECIFIC TO REDSHIFT - MODIFY RS PROPERTIES LIKE VISIBILITY, DISPLACEMENT DEFORMATION, CAUSTICS, ETC ///////////////
+
+{
+//Lists the transform nodes of all selected objects
+string $nodes[] = `ls -selection`;
+
+for ($node in $nodes)
+	{
+	//Loop through each object and obtain its shape node
+	string $shapes[] = `listRelatives -shapes $node`;
+  
+  
+///// UNCOMMENT THE PROPERTY YOU WANT TO MODIFY IN THE SELECTED MESHES FROM THE OUTLINER, AND RUN THE SCRIPT.
+///// BUG: SOMETIMES THE SCRIPT MAY NOT EXECUTE PROPERLY IF OTHER ELEMENTS ARE ACCIDENTALLY SELECTED THAT ARE NOT MESH GEOMETRY.
+
+//	setAttr ($shapes[0] + ".rsEnableVisibilityOverrides") (1);
+//	setAttr ($shapes[0] + ".rsForceBruteForceGI") (1);
+//	setAttr ($shapes[0] + ".rsCausticCaster") (1);
+//	setAttr ($shapes[0] + ".rsEnableSubdivision") (1);
+//	setAttr ($shapes[0] + ".rsEnableDisplacement") (1);
+	}
+}
